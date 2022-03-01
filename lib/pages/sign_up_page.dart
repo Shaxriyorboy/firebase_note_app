@@ -4,6 +4,8 @@ import 'package:firebase_note/pages/sign_in_page.dart';
 import 'package:firebase_note/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
+import '../services/hive_service.dart';
+
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
   static const String id = "sign_up_page";
@@ -39,7 +41,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
     await AuthService.signUpUser(firstName + " " + lastName, email, password)
         .then((value) => _getFirebaseUser(value));
-    Navigator.pushReplacementNamed(context, HomePage.id);
   }
 
   void _getFirebaseUser(User? user) async {
@@ -47,7 +48,8 @@ class _SignUpPageState extends State<SignUpPage> {
       isLoading = true;
     });
     if (user != null) {
-      Navigator.of(context).pushReplacementNamed(SignInPage.id);
+      await HiveDB.storeIdUser(user.uid);
+      Navigator.of(context).pushReplacementNamed(HomePage.id);
     } else {
       /// print error msg
     }
@@ -56,8 +58,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: !isLoading
-          ? SingleChildScrollView(
+      body: SingleChildScrollView(
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 25),
                 height: MediaQuery.of(context).size.height,
@@ -145,9 +146,6 @@ class _SignUpPageState extends State<SignUpPage> {
                   ],
                 ),
               ),
-            )
-          : Center(
-              child: CircularProgressIndicator(),
             ),
     );
   }

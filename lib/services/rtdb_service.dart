@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_note/models/post_model.dart';
 
@@ -20,4 +21,23 @@ class RTDBService{
     }
     return items;
   }
+
+  static Future<Stream<DatabaseEvent>> update(Post post)async{
+    DatabaseReference ref = FirebaseDatabase.instance.ref("posts");
+    String id = "";
+    _database.child("posts").onValue.listen((event) {
+      id = event.snapshot.children.toList()[0].key.toString();
+      print(id);
+    });
+    if(id.isNotEmpty){
+      _database.child("posts").onValue.toList();
+    }
+    await ref.update({
+      "$id/title":post.title,
+      "$id/content":post.content
+    });
+    return _database.onChildChanged;
+  }
+
 }
+

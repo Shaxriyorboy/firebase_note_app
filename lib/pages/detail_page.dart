@@ -4,7 +4,8 @@ import 'package:firebase_note/services/rtdb_service.dart';
 import 'package:flutter/material.dart';
 
 class DetailPage extends StatefulWidget {
-  const DetailPage({Key? key}) : super(key: key);
+  Post? post;
+  DetailPage({Key? key,this.post}) : super(key: key);
   static const String id = "detail_page";
 
   @override
@@ -18,10 +19,43 @@ class _DetailPageState extends State<DetailPage> {
   _addPost()async{
     String title = titleController.text.toString();
     String content = contentController.text.toString();
+    if(title.isEmpty || content.isEmpty) return;
+
+    if(widget.post != null){
+      _apiUpdate(title, content);
+    }else{
+      _apiAddPost(title, content);
+    }
+  }
+
+  _apiAddPost(String title,String content)async{
     var id = await HiveDB.loadIdUser();
     RTDBService.addPost(Post(id, title, content)).then((value) => {
-      print(value.toString()),
+      _response(),
     });
+  }
+
+  _apiUpdate(String title,String content)async{
+    RTDBService.update(Post(widget.post!.userId, title, content)).then((value) => {
+      _response(),
+    });
+  }
+
+
+  _response()async{
+    Navigator.pop(context,true);
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if(widget.post != null){
+      setState(() {
+        titleController.text = widget.post!.title!;
+        contentController.text = widget.post!.content!;
+      });
+    }
   }
 
   @override

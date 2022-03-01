@@ -1,6 +1,8 @@
 import 'package:firebase_note/models/post_model.dart';
 import 'package:firebase_note/pages/detail_page.dart';
 import 'package:firebase_note/services/auth_service.dart';
+import 'package:firebase_note/services/hive_service.dart';
+import 'package:firebase_note/services/rtdb_service.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,9 +20,29 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    items.add(Post("1", "title", "content"));
-    items.add(Post("2", "title1", "content"));
-    items.add(Post("3", "title2", "content"));
+    _apiGetPosts();
+  }
+
+  _openDetail()async{
+    var result = await Navigator.push(context, MaterialPageRoute(builder: (context){
+      return DetailPage();
+    }));
+    if(result == true){
+      _apiGetPosts();
+    }
+  }
+
+  _apiGetPosts()async{
+    var id = await HiveDB.loadIdUser();
+    RTDBService.getPosts(id).then((posts) => {
+      _respPosts(posts),
+    });
+  }
+
+  _respPosts(List<Post> posts){
+    setState(() {
+      items = posts;
+    });
   }
 
   @override
@@ -92,7 +114,7 @@ class _HomePageState extends State<HomePage> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.of(context).pushNamed(DetailPage.id);
+            _openDetail();
           },
           child: Icon(Icons.add,color: Colors.white,),
         ),
@@ -101,10 +123,20 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _itemOfList(index){
-    return Card(
-      child: ListTile(
-        title: Text(items.elementAt(index).title!),
-        subtitle: Text(items.elementAt(index).content!),
+    return GestureDetector(
+      onTap: ()async{
+        var result = await Navigator.push(context, MaterialPageRoute(builder: (context){
+          return DetailPage(post: items[index],);
+        }));
+        if(result == true){
+          _apiGetPosts();
+        }
+      },
+      child: Card(
+        child: ListTile(
+          title: Text(items.elementAt(index).title!),
+          subtitle: Text(items.elementAt(index).content!),
+        ),
       ),
     );
   }
