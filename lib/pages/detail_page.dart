@@ -30,7 +30,6 @@ class _DetailPageState extends State<DetailPage> {
     String title = titleController.text.toString();
     String content = contentController.text.toString();
     if (title.isEmpty || content.isEmpty) return;
-    if (_image == null && widget.post == null) return;
     if (widget.post != null) {
       _apiUpdate(title, content, widget.post!.img_url!,DateTime.now().toString().substring(10,16));
     } else {
@@ -42,11 +41,11 @@ class _DetailPageState extends State<DetailPage> {
     setState(() {
       isLoading = true;
     });
-    StoreService.uploadImage(_image!)
-        .then((img_url) => {_apiAddPost(title, content, img_url!,createDate)});
+    _image != null?StoreService.uploadImage(_image!)
+        .then((img_url) => {_apiAddPost(title, content, img_url!,createDate)}):_apiAddPost(title, content, null,createDate);
   }
 
-  _apiAddPost(String title, String content, String img_url,String createDate) async {
+  _apiAddPost(String title, String content, String? img_url,String createDate) async {
     var id = HiveDB.loadIdUser();
     RTDBService.addPost(Post(id, title, content, img_url,createDate)).then((value) => {
           _response(),
