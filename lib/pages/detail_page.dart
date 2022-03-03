@@ -59,7 +59,7 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   _apiUpdate(
-      String title, String content, String imgUrl, String createDate) async {
+      String title, String content, String? imgUrl, String createDate) async {
     setState(() {
       isLoading = true;
     });
@@ -139,7 +139,7 @@ class _DetailPageState extends State<DetailPage> {
                                 height: 150,
                                 width: 150,
                               )
-                            : Image(
+                            : const Image(
                                 image: AssetImage("assets/images/img.png"),
                                 fit: BoxFit.cover,
                                 height: 150,
