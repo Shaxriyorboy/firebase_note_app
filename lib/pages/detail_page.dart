@@ -31,33 +31,41 @@ class _DetailPageState extends State<DetailPage> {
     String content = contentController.text.toString();
     if (title.isEmpty || content.isEmpty) return;
     if (widget.post != null) {
-      _apiUpdate(title, content, widget.post!.img_url!,DateTime.now().toString().substring(10,16));
+      _apiUpdate(title, content, widget.post!.img_url!,
+          DateTime.now().toString().substring(10, 16));
     } else {
-      _apiUploadImage(title, content,DateTime.now().toString().substring(10,16));
+      _apiUploadImage(
+          title, content, DateTime.now().toString().substring(10, 16));
     }
   }
 
-  void _apiUploadImage(String title, String content,String createDate) {
+  void _apiUploadImage(String title, String content, String createDate) {
     setState(() {
       isLoading = true;
     });
-    _image != null?StoreService.uploadImage(_image!)
-        .then((img_url) => {_apiAddPost(title, content, img_url!,createDate)}):_apiAddPost(title, content, null,createDate);
+    _image != null
+        ? StoreService.uploadImage(_image!).then(
+            (img_url) => {_apiAddPost(title, content, img_url!, createDate)})
+        : _apiAddPost(title, content, null, createDate);
   }
 
-  _apiAddPost(String title, String content, String? img_url,String createDate) async {
+  _apiAddPost(
+      String title, String content, String? img_url, String createDate) async {
     var id = HiveDB.loadIdUser();
-    RTDBService.addPost(Post(id, title, content, img_url,createDate)).then((value) => {
-          _response(),
-        });
+    RTDBService.addPost(Post(id, title, content, img_url, createDate))
+        .then((value) => {
+              _response(),
+            });
   }
 
-  _apiUpdate(String title, String content, String imgUrl,String createDate) async {
+  _apiUpdate(
+      String title, String content, String imgUrl, String createDate) async {
     setState(() {
       isLoading = true;
     });
     String uid = widget.post!.userId!;
-    RTDBService.update(Post(uid, title, content, imgUrl,createDate), widget.index!)
+    RTDBService.update(
+            Post(uid, title, content, imgUrl, createDate), widget.index!)
         .then((value) => {
               Navigator.pop(context, true),
               setState(() {
@@ -102,8 +110,9 @@ class _DetailPageState extends State<DetailPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: WillPopScope(
-        onWillPop: ()async{
-          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){
+        onWillPop: () async {
+          Navigator.of(context)
+              .pushReplacement(MaterialPageRoute(builder: (context) {
             return HomePage();
           }));
           return true;
@@ -121,17 +130,20 @@ class _DetailPageState extends State<DetailPage> {
                       onTap: () {
                         _getImage();
                       },
-                      child: Container(
-                        height: 100,
-                        width: 100,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
                         child: _image != null
                             ? Image.file(
                                 _image!,
                                 fit: BoxFit.cover,
+                                height: 150,
+                                width: 150,
                               )
                             : Image(
                                 image: AssetImage("assets/images/img.png"),
                                 fit: BoxFit.cover,
+                                height: 150,
+                                width: 150,
                               ),
                       ),
                     ),
