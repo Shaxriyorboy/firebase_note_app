@@ -2,11 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_note/pages/detail_page.dart';
 import 'package:firebase_note/pages/home_page.dart';
+import 'package:firebase_note/pages/image_page.dart';
 import 'package:firebase_note/pages/sign_in_page.dart';
 import 'package:firebase_note/pages/sign_up_page.dart';
 import 'package:firebase_note/services/hive_service.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 
 void main() async {
@@ -49,6 +49,7 @@ class MyApp extends StatelessWidget {
         SignInPage.id:(context) => SignInPage(),
         SignUpPage.id:(context) => SignUpPage(),
         DetailPage.id:(context) => DetailPage(),
+        ImagePage.id:(context) => ImagePage(),
       },
     );
   }
